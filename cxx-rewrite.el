@@ -5,7 +5,7 @@
 (unless (file-directory-p dir-to-scan)
   (error "Usage: emacs --script cxx-rewrite.el DIR"))
 
-(defconst cxxrewrite-dirs '("." "cli" "mi" "python" "tui"))
+(defconst cxxrewrite-dirs '("." "cli" "mi" "tui" "python" "guile" "nat" "common" "gdbserver"))
 
 (defun cxxrewrite-files ()
   (apply #'nconc
