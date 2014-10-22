@@ -3,7 +3,11 @@
 ;;; named "Log" in the build/gdb directory.
 ;;; Note you need LANG=C and -ftrack-macro-expansion=0 -Wc++-compat
 ;;; Then run this script.  It will rewrite the sources to insert
-;;; some needed casts.
+;;; some needed casts.  For example:
+;;;
+;;;  $ LANG=C make -k CFLAGS="-ftrack-macro-expansion=0 -Wc++-compat" WERROR_CFLAGS="" 2>&1 | tee Log
+;;;  $ emacs --script ~/src/gdb-refactoring-scripts/src/insert-casts.el
+;;;
 ;;; It doesn't handle everything, just a subset.  And since gcc's
 ;;; error message locations aren't always precise, it sometimes
 ;;; introduces errors.
