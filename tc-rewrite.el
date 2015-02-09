@@ -13,65 +13,8 @@
 				    t "\\.c$"))
 		 trycatch-dirs)))
 
-(defconst trycatch-symbol-rx
-  ;; bizarrely we can't seem to do this with [:something:].
-  "\\_<[[:alnum:]_]+\\_>")
-
-(defconst trycatch-tc-rx
-  (concat "TRY_CATCH\s-*(\\s-*\\(" trycatch-symbol-rx "\\)\\s-*"
-	  ",\\s-*RETURN_MASK_\\([^)]+\\))"))
-
 (defconst trycatch-decl-rx
   "^\\s-*volatile struct gdb_exception\\s-*[^\n]*\n")
-
-(defconst trycatch-cont-break-rx
-  "\\_<\\(break\\|continue\\)\\_>")
-
-;; check if conforming and return end boundary if so.
-(defun trycatch-conforming ()
-  (skip-chars-forward " \t\n")
-  (if (looking-at "{")
-      (save-excursion (forward-sexp) (point))
-    (message "%s:%d: non-conforming TRY_CATCH"
-	     (buffer-file-name)
-	     (line-number-at-pos))
-    nil))
-
-(defun trycatch-warn-cb (limit)
-  (while (re-search-forward trycatch-cont-break-rx limit t)
-    (message "%s:%d: %s in TRY_CATCH"
-	     (buffer-file-name)
-	     (line-number-at-pos)
-	     (match-string 0))))
-
-;; This function was going in the direction of converting to C++
-;; try/catch directly.  Currently unused.
-
-;;; This rewrites TRY_CATCH to "try" and sometimes an
-;;; additional "catch".  It isn't quite finished.
-;;; The output isn't valid, it still needs post-editing
-
-;;; TO DO:
-;;; * RETURN_MASK handling must be implemented
-;;;   it should turn into a different type on the 'catch'
-;;; * unconditionally emit a "catch", sometimes "catch (...) { }"
-
-(defun trycatch-rewrite-try ()
-  (goto-char (point-min))
-  (while (re-search-forward trycatch-tc-rx nil t)
-    (let ((symbol (match-string 1))
-	  (mask (match-string 2)))
-      (replace-match "try")
-      (let ((end-of-body (trycatch-conforming)))
-	(when end-of-body
-	  (trycatch-warn-cb end-of-body)
-	  (goto-char end-of-body)
-	  (skip-chars-forward " \t\n")
-	  (if (looking-at (concat "if (" symbol "\\.reason < 0)"))
-	      (replace-match (concat "catch (const gdb_exception &"
-				     symbol ")"))))))))
-
-;; Start TRY_CATCH -> TRY+CATCH+END_CATCH conversion.
 
 ;; Remove all local volatile struct gdb_exception objects.  They
 ;; aren't necessary in the new scheme.
