@@ -4,7 +4,7 @@
 (unless (file-directory-p dir-to-scan)
   (error "Usage: emacs --script tc-rewrite.el DIR"))
 
-(defconst trycatch-dirs '("." "cli" "mi" "tui" "nat" "common" "python" "guile" "gdbserver"))
+(defconst trycatch-dirs '("." "cli" "mi" "tui" "nat" "common" "python" "guile" "gdbserver" "compile"))
 
 (defun trycatch-files ()
   (apply #'nconc
