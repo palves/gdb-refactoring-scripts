@@ -220,13 +220,15 @@
 
 (defun trycatch-rewrite-one (file)
   (find-file file)
-  (trycatch-zap-exceptions)
-  (trycatch-fix-try-block)
-  (trycatch-split-try-and-catch)
-  (trycatch-python-scheme)
-  (trycatch-add-catch-block)
-  (trycatch-fix-catch-block)
-  (trycatch-end-catch)
+  ;; Search is case-insensitive by default.  Turn that off.
+  (let ((case-fold-search nil))
+    (trycatch-zap-exceptions)
+    (trycatch-fix-try-block)
+    (trycatch-split-try-and-catch)
+    (trycatch-python-scheme)
+    (trycatch-add-catch-block)
+    (trycatch-fix-catch-block)
+    (trycatch-end-catch))
   (if (buffer-modified-p)
       (save-buffer)))
 
